@@ -15,10 +15,6 @@ from enemy import Enemy
 from player import Hero
 from item import Item, Potion
 
-spellbook = Item("Spellbook", "An ancient tome imbued with magical knowledge.", "📔")
-fireball = Item("Fireball", "A devastating burst of fiery magic.", "🔥")
-superpotion = Potion("Super-potion", "Restores the hero's health completely when used.", "⚗️")
-
 
 def clear() -> None:
     """
@@ -156,13 +152,12 @@ class Game:
             print(self.hero)
 
             # If the hero has a super-potion, ask if they want to use it
-            if self.hero.inventory.has_item(superpotion) and get_yes_no("\n> ⚗️ Use a "
-                                                                        "SUPER-POTION to "
-                                                                        "restore "
-                                                                        "full health? [Y/n] "):
-                item = self.hero.inventory.find_item(superpotion)
-                if item:
-                    self.hero.inventory.use_item(item, self.hero)
+            if (self.hero.inventory.find_item("spotion") and
+                    get_yes_no("\n> ⚗️ Use a SUPER-POTION to restore full health? [Y/n] ")):
+                item_spotion = self.hero.inventory.find_item("spotion")
+                if item_spotion:
+                    self.hero.inventory.use_item(item_spotion, self.hero)
+
             sleep(1.5 * config.GAME_SPEED)
 
             filler = choice(config.TEMPLATE_MOVE)
@@ -173,15 +168,19 @@ class Game:
 
             # Day X event: hero acquires a spellbook
             if self.day == config.GAME_SPELLBOOK_DAY:
-                self.hero.inventory.add_item(spellbook)
+                item_spellbook = Item("spellbook", "Spellbook", "An ancient tome imbued with "
+                                                                "magical knowledge.", "📔")
+                self.hero.inventory.add_item(item_spellbook)
 
                 print(f"📔 \033[1m{self.hero.get_name()}\033[0m found a spellbook!")
 
             # If the hero has the spellbook and enough experience, they learn the Fireball spell
-            if (self.hero.inventory.has_item(spellbook)
-                    and not self.hero.inventory.has_item(fireball)
+            if (self.hero.inventory.find_item("spellbook")
+                    and not self.hero.inventory.find_item("fireball")
                     and self.hero.get_experience() >= config.FIREBALL_XP):
-                self.hero.inventory.add_item(fireball)
+                item_fireball = Item("fireball", "Fireball", "A devastating burst of fiery magic.",
+                                     "🔥")
+                self.hero.inventory.add_item(item_fireball)
 
                 print(f"🔥 \033[1m{self.hero.get_name()}\033[0m learned the Fireball spell!")
 
@@ -337,11 +336,14 @@ class Game:
         it increases the hero's super-potion count and displays the result.
         This feature is only available if the hero has a spellbook.
         """
-        if (self.hero.inventory.has_item(spellbook) and randint(1, 100) <=
+        if (self.hero.inventory.find_item("spellbook") and randint(1, 100) <=
                 config.POTION_SUPER_FIND_CHANCE):
             # old_spotion = self.hero.superpotion
 
-            self.hero.inventory.add_item(superpotion)
+            item_spotion = Potion("spotion", "Super-potion", "Restores the hero's health "
+                                                             "completely when used.","⚗️")
+
+            self.hero.inventory.add_item(item_spotion)
             # print(f"    ⚗️ \033[1m{self.hero.get_name()}\033[0m found a SUPER-POTION! |",
             #       old_spotion, f"-> {self.hero.superpotion}")
 
@@ -360,7 +362,7 @@ class Game:
             if get_yes_no("    > Potion may be poisonous or healing. Consume it? [Y/n] "):
                 potion_effect = randint(*config.POTION_EFFECT_RANGE)
 
-                if self.hero.inventory.has_item(spellbook):
+                if self.hero.inventory.find_item("spellbook"):
                     potion_effect = abs(potion_effect)
 
                 self.hero.set_health(self.hero.get_health() + potion_effect)
@@ -402,7 +404,7 @@ class Game:
                 return False
 
             if action == "2":  # Use super-potion
-                item = self.hero.inventory.find_item(superpotion)
+                item = self.hero.inventory.find_item("spotion")
                 if item:
                     self.hero.inventory.use_item(item, self.hero)
                 else:

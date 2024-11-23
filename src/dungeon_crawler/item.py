@@ -7,6 +7,7 @@ The `Potion` subclass represents an item that can be used to heal the character.
 DEFAULT_NAME = "Item"
 DEFAULT_DESCRIPTION = "Description"
 DEFAULT_ICON = "📦"
+DEFAULT_AMOUNT = 1
 
 
 class Item:
@@ -16,8 +17,12 @@ class Item:
     Represents a generic item with a name, description, and icon. Items can be
     used by a character, though the exact behavior of `use` depends on the specific item.
     """
-    def __init__(self, name: str = DEFAULT_NAME, description: str = DEFAULT_DESCRIPTION,
-                 icon: str = DEFAULT_ICON) -> None:
+    def __init__(self,
+                 uuid: str,
+                 name: str = DEFAULT_NAME,
+                 description: str = DEFAULT_DESCRIPTION,
+                 icon: str = DEFAULT_ICON,
+                 amount: int = DEFAULT_AMOUNT) -> None:
         """
         Initializes an item with the given attributes.
 
@@ -26,9 +31,26 @@ class Item:
             description (str): The description of the item.
             icon (str): The icon representing the item.
         """
+        self.uuid = uuid
         self.name = name
         self.description = description
         self.icon = icon
+        self.amount = amount
+
+    def get_name(self):
+        return self.name
+
+    def get_description(self):
+        return self.description
+
+    def get_icon(self):
+        return self.icon
+
+    def get_amount(self):
+        return self.amount
+
+    def on_remove(self):
+        pass
 
     def use(self, user):
         """
@@ -41,6 +63,7 @@ class Item:
         Returns:
             bool: Whether the item was used successfully.
         """
+        self.amount -= 1
 
     def __str__(self):
         """
@@ -49,7 +72,7 @@ class Item:
         Returns:
             str: A string describing the item.
         """
-        return f"{self.icon} {self.name}: {self.description}"
+        return f"{self.icon} {self.name} ({self.amount}): {self.description}"
 
 
 class Potion(Item):
@@ -66,6 +89,9 @@ class Potion(Item):
         Returns:
             bool: Always returns True to indicate the potion was used successfully.
         """
+        super().use(user)
+
         user.set_health(user.get_max_health())
         print("🩵 Health fully restored")
+
         return True

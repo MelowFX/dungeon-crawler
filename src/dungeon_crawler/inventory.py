@@ -4,6 +4,9 @@ can carry. The class allows adding, removing, checking for, and using items, as 
 the inventory contents.
 """
 
+from character import Character
+from item import Item
+
 
 class Inventory:
     """
@@ -21,7 +24,7 @@ class Inventory:
         """
         self.items = []
 
-    def add_item(self, item):
+    def add_item(self, item: Item):
         """
         Adds an item to the inventory.
 
@@ -30,44 +33,33 @@ class Inventory:
         """
         self.items.append(item)
 
-    def remove_item(self, item):
+    def remove_item(self, item: Item):
         """
         Removes an item from the inventory.
 
         Args:
             item: The item to be removed from the inventory.
         """
+        item.on_remove()
         self.items.remove(item)
 
-    def has_item(self, item) -> bool:
-        """
-        Checks if the inventory contains a specific item.
-
-        Args:
-            item: The item to check for in the inventory.
-
-        Returns:
-            bool: True if the item is in the inventory, False otherwise.
-        """
-        return item in self.items
-
-    def find_item(self, target_item):
+    def find_item(self, uuid: str):
         """
         Finds a specific item in the inventory.
 
         Args:
-            target_item: The item to search for in the inventory.
+            uuid: The item UUID to search for in the inventory.
 
         Returns:
             Item or None: The item if found, or None if not found.
         """
         for item in self.items:
-            if item == target_item:
+            if item.uuid == uuid:
                 return item
 
         return None
 
-    def use_item(self, item, user):
+    def use_item(self, item: Item, user: Character):
         """
         Uses an item from the inventory and removes it after use.
 
