@@ -7,6 +7,7 @@ from other characters, including experience points, super-potions, and magical a
 from random import randint
 from character import Character
 from inventory import Inventory
+from action import AttackAction, UsePotionAction, FleeAction
 
 DEFAULT_NAME = "Hero"
 DEFAULT_ICON = "🧍"
@@ -16,8 +17,8 @@ DEFAULT_DAMAGE = 20
 
 class Hero(Character):
     """
-        Subclass of Character representing the player's hero.
-        Adds experience points, super-potions, and magic abilities.
+    Subclass of Character representing the player's hero.
+    Adds experience points, super-potions, and magic abilities.
     """
 
     def __init__(self, name: str = DEFAULT_NAME, health: int = DEFAULT_HEALTH,
@@ -36,11 +37,14 @@ class Hero(Character):
 
         self.xp = 0
         self.dodge_chance = 50
-        self.superpotion = 0
-        self.fireball = False
-        self.spellbook = False
 
         self.inventory = Inventory()
+
+        self.actions = {
+            "attack": AttackAction(),
+            "potion": UsePotionAction(),
+            "flee": FleeAction(),
+        }
 
     def __str__(self) -> str:
         """
@@ -48,10 +52,34 @@ class Hero(Character):
         """
         return super().__str__() + f"\n    ✨ Experience: {self.xp}\n" + str(self.inventory)
 
+    def prompt_name(self):
+        """
+        Prompts the user for a valid hero name.
+
+        Returns:
+            str: The hero's name entered by the user.
+        """
+        while True:
+            hero_name = input("> Hero name: ")
+
+            if not hero_name:
+                print("\n❌ Please enter a valid hero name. The name cannot be empty.\n")
+            else:
+                self.name = hero_name
+                return self.name
+
+    def show_actions(self):
+        """
+           Displays the available actions to the player during combat.
+        """
+        print("🎭 \033[1mActions:\033[0m")
+
+        for name in self.actions:
+            print(f"    [{name}]")
+
     def pre_damage(self):
         if randint(1, 100) >= self.dodge_chance:
             print(f"💨 \033[1m{self.get_name()}\033[0m swiftly dodged the attack!")
-
             return True
 
         return False

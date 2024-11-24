@@ -17,40 +17,41 @@ class Item:
     Represents a generic item with a name, description, and icon. Items can be
     used by a character, though the exact behavior of `use` depends on the specific item.
     """
-    def __init__(self,
-                 uuid: str,
-                 name: str = DEFAULT_NAME,
-                 description: str = DEFAULT_DESCRIPTION,
-                 icon: str = DEFAULT_ICON,
-                 amount: int = DEFAULT_AMOUNT) -> None:
+
+    def __init__(self, uuid: str, attributes: dict = None) -> None:
         """
         Initializes an item with the given attributes.
 
-        Args:
-            name (str): The name of the item.
-            description (str): The description of the item.
-            icon (str): The icon representing the item.
+        Args: uuid (str): Unique identifier for the item. attributes (dict): A dictionary
+        containing item attributes like name, description, icon, and amount.
         """
+        if attributes is None:
+            attributes = {}
+
         self.uuid = uuid
-        self.name = name
-        self.description = description
-        self.icon = icon
-        self.amount = amount
+        self.name = attributes.get("name", DEFAULT_NAME)
+        self.description = attributes.get("description", DEFAULT_DESCRIPTION)
+        self.icon = attributes.get("icon", DEFAULT_ICON)
+        self.amount = attributes.get("amount", DEFAULT_AMOUNT)
 
     def get_name(self):
+        """Returns the name of the item."""
         return self.name
 
     def get_description(self):
+        """Returns the description of the item."""
         return self.description
 
     def get_icon(self):
+        """Returns the icon representing the item."""
         return self.icon
 
     def get_amount(self):
+        """Returns the current amount of the item."""
         return self.amount
 
     def on_remove(self):
-        pass
+        """Handles any behavior when the item is removed from the inventory."""
 
     def use(self, user):
         """

@@ -6,6 +6,7 @@ all enemy characters.
 """
 
 from random import randint
+from action import ActionResult, AttackAction, UsePotionAction, FleeAction
 
 DEFAULT_NAME = "Unnamed"
 DEFAULT_HEALTH = 100
@@ -31,22 +32,34 @@ class Character:
             damage (int): The damage the character can inflict.
             icon (str): The visual representation of the character.
         """
+
         self.name = name
-        self.health = health
-        self.health_max = health
-        self.damage = damage
         self.icon = icon
+
+        self.stats = {
+            "health": health,
+            "health_max": health,
+            "damage": damage,
+        }
+
+        self.inventory = None
 
         self.flee_chance = 25
         self.crit_chance = 50
+
+        self.actions = {
+            "attack": AttackAction(),
+            "potion": UsePotionAction(),
+            "flee": FleeAction(),
+        }
 
     def __str__(self) -> str:
         """
         Prints the character's current health and name.
         """
         return (f"\033[1m{self.icon} {self.name}'s\033[0m status:\n"
-                f"    ❤️ Health: {self.health} / {self.health_max}\n"
-                f"    💥 Damage: {self.damage}")
+                f"    ❤️ Health: {self.stats['health']} / {self.stats['health_max']}\n"
+                f"    💥 Damage: {self.stats['damage']}")
 
     def attack(self, target: "Character") -> None:
         """
@@ -55,7 +68,7 @@ class Character:
         Args:
             target (Character): The target character being attacked.
         """
-        damage = self.damage
+        damage = self.stats['damage']
         crit_text = ""
 
         if randint(1, 100) <= self.crit_chance:
@@ -72,6 +85,28 @@ class Character:
         print(f"🗡️ {crit_text}\033[1m{self.name}\033[0m attacked {target.icon} \033[1"
               f"m{target.name}\033[0m"
               f" for \033[1m{damage} damage!\033[0m")
+
+    def perform_action(self, action_name: str, *args, **kwargs):
+        """
+        Executes the specified action for the character.
+
+        This method looks up the action by its name and performs it, passing the character
+        as the actor along with any additional arguments or keyword arguments.
+
+        Args:
+            action_name (str): The name of the action to perform (e.g., "attack", "flee").
+            *args: Additional positional arguments to pass to the action's execute method.
+            **kwargs: Additional keyword arguments to pass to the action's execute method.
+
+        Returns: ActionResult: The result of executing the action.
+        """
+        action = self.actions.get(action_name)
+
+        if action:
+            return action.execute(self, *args, **kwargs)
+
+        print("❌ Invalid action.")
+        return ActionResult.NONE
 
     def pre_damage(self):
         """
@@ -92,7 +127,7 @@ class Character:
         Returns:
             bool: True if the character is dead, False otherwise.
         """
-        return self.health > 0
+        return self.stats['health'] > 0
 
     def get_name(self) -> str:
         """
@@ -110,7 +145,7 @@ class Character:
         Args:
             health (int): The new health value to set.
         """
-        self.health = min(health, self.health_max)
+        self.stats['health'] = min(health, self.stats['health_max'])
 
     def get_health(self) -> int:
         """
@@ -119,7 +154,7 @@ class Character:
         Returns:
             int: The character's health.
         """
-        return self.health
+        return self.stats['health']
 
     def get_max_health(self) -> int:
         """
@@ -128,18 +163,4 @@ class Character:
         Returns:
             int: The character's maximum health.
         """
-        return self.health_max
-
-    def try_flee(self) -> bool:
-        """
-        Attempts to flee from a fight.
-
-        Returns:
-            bool: True if the flee attempt was successful, False otherwise.
-        """
-        if randint(1, 100) <= self.flee_chance:
-            print(f"💨 \033[1m{self.name}\033[0m fled the fight!")
-            return True
-
-        print(f"⚠️ \033[1m{self.name}\033[0m failed to flee and must continue fighting!")
-        return False
+        return self.stats['health_max']
