@@ -15,7 +15,7 @@ DEFAULT_HEALTH = 100
 DEFAULT_DAMAGE = 20
 
 
-class Hero(Character):
+class Player(Character):
     """
     Subclass of Character representing the player's hero.
     Adds experience points, super-potions, and magic abilities.
@@ -35,7 +35,7 @@ class Hero(Character):
         """
         super().__init__(name=name, health=health, damage=damage, icon=icon)
 
-        self.xp = 0
+        self._experience = 0
         self.dodge_chance = 50
 
         self.inventory = Inventory()
@@ -50,7 +50,8 @@ class Hero(Character):
         """
         Prints the character's current health and name.
         """
-        return super().__str__() + f"\n    ✨ Experience: {self.xp}\n" + str(self.inventory)
+        text = f"\n    ✨ Experience: {self.experience}\n" + str(self.inventory)
+        return super().__str__() + text
 
     def prompt_name(self):
         """
@@ -79,34 +80,36 @@ class Hero(Character):
 
     def pre_damage(self):
         if randint(1, 100) >= self.dodge_chance:
-            print(f"💨 \033[1m{self.get_name()}\033[0m swiftly dodged the attack!")
+            print(f"💨 \033[1m{self.name}\033[0m swiftly dodged the attack!")
             return True
 
         return False
 
-    def set_experience(self, xp: int) -> None:
-        """
-        Sets the hero's experience to a specified value.
-
-        Args:
-            xp (int): The new experience value to set.
-        """
-        self.xp = xp
-
-    def add_experience(self, xp: int) -> None:
-        """
-        Increases the hero's experience by a specified amount.
-
-        Args:
-            xp (int): The amount of experience to add.
-        """
-        self.xp += xp
-
-    def get_experience(self) -> int:
+    @property
+    def experience(self):
         """
         Retrieves the hero's current experience points.
 
         Returns:
             int: The current experience points of the hero.
         """
-        return self.xp
+        return self._experience
+
+    @experience.setter
+    def experience(self, experience: int):
+        """
+        Sets the hero's experience to a specified value.
+
+        Args:
+            experience (int): The new experience value to set.
+        """
+        self._experience = experience
+
+    def add_experience(self, experience: int) -> None:
+        """
+        Increases the hero's experience by a specified amount.
+
+        Args:
+            experience (int): The amount of experience to add.
+        """
+        self.experience += experience

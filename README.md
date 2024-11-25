@@ -62,7 +62,6 @@ python main.py
     - `perform_action()`: Executes a specific action from the `actions` dictionary.
     - `pre_damage()`: Checks any special behavior (e.g., dodging) before taking damage.
     - `alive()`: Checks if the character is still alive (health > 0).
-    - `set_health()`, `get_health()`: Get and set health values.
 
 The `Character` class serves as the base for both the `Hero` and `Enemy` classes.
 
@@ -78,7 +77,6 @@ The `Character` class serves as the base for both the `Hero` and `Enemy` classes
 - **Methods**: 
     - `prompt_name()`: Prompts the user for a hero name.
     - `show_actions()`: Displays the available actions for the player to choose during combat.
-    - `set_experience()`, `add_experience()`, `get_experience()`: Methods for handling XP.
 
 The `Hero` class extends the `Character` class and adds unique attributes and abilities that make the hero distinct from enemies, such as the ability to gain experience and use magical abilities.
 
@@ -139,7 +137,7 @@ The `Inventory` class helps manage the player's collection of items, providing t
 - **Purpose**: Defines actions the characters can take during the game (attacks, using potions, and fleeing).
 - **Attributes**: Each action class (e.g., `AttackAction`, `UsePotionAction`, `FleeAction`) defines the execution logic for its corresponding action.
 - **Methods**: 
-    - `execute()`: Defines how the action is executed (e.g., performing an attack, using a potion).
+    - `perform()`: Defines how the action is executed (e.g., performing an attack, using a potion).
 
 Actions are mapped in the `actions` attribute of both `Hero` and `Enemy` classes, allowing for easy execution of actions during combat.
 

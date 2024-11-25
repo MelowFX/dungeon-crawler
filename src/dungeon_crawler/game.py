@@ -12,17 +12,17 @@ from util import clear, get_yes_no
 
 import config
 from enemy import Goblin
-from hero import Hero
+from player import Player
 from item import Item, Potion
 from combat import Combat
 
 
-def get_start_message(hero: Hero) -> str:
+def get_start_message(hero: Player) -> str:
     """
     Gets a random start message for the hero.
 
     Args:
-        hero (Hero): The hero object.
+        hero (Player): The hero object.
 
     Returns:
         str: A randomly generated start message string.
@@ -38,14 +38,14 @@ class Game:
     """
 
     def __init__(self) -> None:
-        self.hero = Hero()
+        self.hero = Player()
         self.day = config.GAME_STARTING_DAY
 
     def reset(self) -> None:
         """
         Resets the game state for a new playthrough.
         """
-        self.hero = Hero()
+        self.hero = Player()
         self.day = config.GAME_STARTING_DAY
 
     def pre_start_game(self) -> None:
@@ -54,7 +54,7 @@ class Game:
         """
         print(config.GAME_NAME)
 
-        self.hero = Hero()
+        self.hero = Player()
         self.hero.prompt_name()
         sleep(1 * config.GAME_SPEED)
 
@@ -128,7 +128,7 @@ class Game:
         """
         if (self.hero.inventory.find_item("spellbook")
                 and not self.hero.inventory.find_item("fireball")
-                and self.hero.get_experience() >= config.FIREBALL_XP):
+                and self.hero.experience >= config.FIREBALL_XP):
             item_fireball = Item(
                 "fireball",
                 {
@@ -139,7 +139,7 @@ class Game:
             )
             self.hero.inventory.add_item(item_fireball)
 
-            print(f"🔥 \033[1m{self.hero.get_name()}\033[0m learned the Fireball spell!")
+            print(f"🔥 \033[1m{self.hero.name}\033[0m learned the Fireball spell!")
 
     def find_spellbook(self):
         """
@@ -159,7 +159,7 @@ class Game:
             )
             self.hero.inventory.add_item(item_spellbook)
 
-            print(f"📔 \033[1m{self.hero.get_name()}\033[0m found a spellbook!")
+            print(f"📔 \033[1m{self.hero.name}\033[0m found a spellbook!")
 
     def show_end_screen(self, message: str) -> None:
         """
@@ -187,9 +187,9 @@ class Game:
         """
         clear()
 
-        message = f"💀 \033[1m{self.hero.get_name()}\033[0m has died...\n"
+        message = f"💀 \033[1m{self.hero.name}\033[0m has died...\n"
 
-        if self.day >= config.GAME_MAX_DAYS and self.hero.get_experience() <= 0:
+        if self.day >= config.GAME_MAX_DAYS and self.hero.experience <= 0:
             message += f"\n...because they reached day {config.GAME_MAX_DAYS} with no experience.\n"
 
         self.show_end_screen(message)
@@ -198,12 +198,12 @@ class Game:
         """
         Displays the victory screen if the hero survives until the final day.
         """
-        if self.hero.get_experience() <= 0:
+        if self.hero.experience <= 0:
             self.game_over()
             return
 
-        self.show_end_screen(f"🥳 \033[1m{self.hero.get_name()}\033[0m survived!"
-                             f"\nWith ✨ \033[1m{self.hero.get_experience()} experience\033[0m\n")
+        self.show_end_screen(f"🥳 \033[1m{self.hero.name}\033[0m survived!"
+                             f"\nWith ✨ \033[1m{self.hero.experience} experience\033[0m\n")
 
     def goblin_encounter(self) -> None:
         """
@@ -213,7 +213,9 @@ class Game:
         If the user chooses to fight, initiates a combat sequence.
         """
         enemy = Goblin()
-        Combat(self, self.hero, enemy)
+
+        combat = Combat(self, self.hero, enemy)
+        combat.prompt()
 
     def find_superpotion(self) -> None:
         """
@@ -237,7 +239,7 @@ class Game:
             )
 
             self.hero.inventory.add_item(item_spotion)
-            # print(f"    ⚗️ \033[1m{self.hero.get_name()}\033[0m found a SUPER-POTION! |",
+            # print(f"    ⚗️ \033[1m{self.hero.name}\033[0m found a SUPER-POTION! |",
             #       old_spotion, f"-> {self.hero.superpotion}")
 
     def find_potion(self) -> None:
@@ -249,7 +251,7 @@ class Game:
         health. If the hero possesses a spellbook, the potion effect is always positive.
         """
         if randint(1, 100) <= config.POTION_FIND_CHANCE:
-            print(f"🧪 \033[1m{self.hero.get_name()}\033[0m found a potion!")
+            print(f"🧪 \033[1m{self.hero.name}\033[0m found a potion!")
 
             # Prompt to consume the potion
             if get_yes_no("    > Potion may be poisonous or healing. Consume it? [Y/n] "):
@@ -258,7 +260,7 @@ class Game:
                 if self.hero.inventory.find_item("spellbook"):
                     potion_effect = abs(potion_effect)
 
-                self.hero.set_health(self.hero.get_health() + potion_effect)
+                self.hero.health = self.hero.health + potion_effect
 
                 print(f"\n{'😇' if potion_effect > 0 else '🤮'} {potion_effect:+} health")
 
@@ -266,4 +268,4 @@ class Game:
                 if not self.hero.alive():
                     self.game_over()
             else:
-                print(f"\n\033[1m{self.hero.get_name()}\033[0m decided not to drink the potion...")
+                print(f"\n\033[1m{self.hero.name}\033[0m decided not to drink the potion...")

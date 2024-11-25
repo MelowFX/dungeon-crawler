@@ -24,6 +24,18 @@ class Inventory:
         """
         self.items = []
 
+    def __str__(self):
+        """
+        Returns a string representation of the inventory, listing all items.
+
+        If the inventory is empty, it returns a message stating that the inventory is empty.
+
+        Returns:
+            str: The inventory's contents as a string.
+        """
+        return "\n🎒 Inventory:\n" + ("\n".join(
+            f"    {str(item)}" for item in self.items) if self.items else "    Inventory is empty.")
+
     def add_item(self, item: Item):
         """
         Adds an item to the inventory.
@@ -69,15 +81,3 @@ class Inventory:
         """
         if item.use(user):
             self.remove_item(item)
-
-    def __str__(self):
-        """
-        Returns a string representation of the inventory, listing all items.
-
-        If the inventory is empty, it returns a message stating that the inventory is empty.
-
-        Returns:
-            str: The inventory's contents as a string.
-        """
-        return "\n🎒 Inventory:\n" + ("\n".join(
-            f"    {str(item)}" for item in self.items) if self.items else "    Inventory is empty.")

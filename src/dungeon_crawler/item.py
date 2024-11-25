@@ -28,27 +28,56 @@ class Item:
         if attributes is None:
             attributes = {}
 
-        self.uuid = uuid
-        self.name = attributes.get("name", DEFAULT_NAME)
-        self.description = attributes.get("description", DEFAULT_DESCRIPTION)
-        self.icon = attributes.get("icon", DEFAULT_ICON)
-        self.amount = attributes.get("amount", DEFAULT_AMOUNT)
+        self._uuid = uuid
+        self._name = attributes.get("name", DEFAULT_NAME)
+        self._description = attributes.get("description", DEFAULT_DESCRIPTION)
+        self._icon = attributes.get("icon", DEFAULT_ICON)
+        self._amount = attributes.get("amount", DEFAULT_AMOUNT)
 
-    def get_name(self):
-        """Returns the name of the item."""
-        return self.name
+    def __str__(self):
+        """
+        Returns a string representation of the item, including its icon, name, and description.
 
-    def get_description(self):
-        """Returns the description of the item."""
-        return self.description
+        Returns:
+            str: A string describing the item.
+        """
+        return f"{self.icon} {self.name} ({self.amount}): {self.description}"
 
-    def get_icon(self):
-        """Returns the icon representing the item."""
-        return self.icon
+    @property
+    def uuid(self):
+        return self._uuid
 
-    def get_amount(self):
-        """Returns the current amount of the item."""
-        return self.amount
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, name: str) -> None:
+        self._name = name
+
+    @property
+    def description(self) -> str:
+        return self._name
+
+    @description.setter
+    def description(self, description: str) -> None:
+        self._description = description
+
+    @property
+    def icon(self) -> str:
+        return self._icon
+
+    @icon.setter
+    def icon(self, icon: str) -> None:
+        self._icon = icon
+
+    @property
+    def amount(self) -> int:
+        return self._amount
+
+    @amount.setter
+    def amount(self, amount: int) -> None:
+        self._amount = amount
 
     def on_remove(self):
         """Handles any behavior when the item is removed from the inventory."""
@@ -65,15 +94,6 @@ class Item:
             bool: Whether the item was used successfully.
         """
         self.amount -= 1
-
-    def __str__(self):
-        """
-        Returns a string representation of the item, including its icon, name, and description.
-
-        Returns:
-            str: A string describing the item.
-        """
-        return f"{self.icon} {self.name} ({self.amount}): {self.description}"
 
 
 class Potion(Item):
@@ -92,7 +112,7 @@ class Potion(Item):
         """
         super().use(user)
 
-        user.set_health(user.get_max_health())
+        user.health = user.max_health
         print("🩵 Health fully restored")
 
         return True

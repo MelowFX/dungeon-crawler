@@ -33,8 +33,8 @@ class Character:
             icon (str): The visual representation of the character.
         """
 
-        self.name = name
-        self.icon = icon
+        self._name = name
+        self._icon = icon
 
         self.stats = {
             "health": health,
@@ -79,8 +79,8 @@ class Character:
         if target.pre_damage():
             return
 
-        new_health = target.get_health() - damage
-        target.set_health(new_health)
+        new_health = target.health - damage
+        target.health = new_health
 
         print(f"🗡️ {crit_text}\033[1m{self.name}\033[0m attacked {target.icon} \033[1"
               f"m{target.name}\033[0m"
@@ -95,15 +95,15 @@ class Character:
 
         Args:
             action_name (str): The name of the action to perform (e.g., "attack", "flee").
-            *args: Additional positional arguments to pass to the action's execute method.
-            **kwargs: Additional keyword arguments to pass to the action's execute method.
+            *args: Additional positional arguments to pass to the action's perform method.
+            **kwargs: Additional keyword arguments to pass to the action's perform method.
 
         Returns: ActionResult: The result of executing the action.
         """
         action = self.actions.get(action_name)
 
         if action:
-            return action.execute(self, *args, **kwargs)
+            return action.perform(self, *args, **kwargs)
 
         print("❌ Invalid action.")
         return ActionResult.NONE
@@ -129,38 +129,84 @@ class Character:
         """
         return self.stats['health'] > 0
 
-    def get_name(self) -> str:
+    @property
+    def name(self) -> str:
         """
-        Retrieves the hero's name.
+        Gets the character's name.
 
         Returns:
-            str: The name of the hero.
+            str: The name of the character.
         """
-        return self.name
+        return self._name
 
-    def set_health(self, health: int) -> None:
+    @name.setter
+    def name(self, name: str) -> None:
         """
-        Sets the character's health, ensuring it doesn't exceed the maximum.
+        Sets the character's name.
 
         Args:
-            health (int): The new health value to set.
+            name (str): The name to assign to the character.
         """
-        self.stats['health'] = min(health, self.stats['health_max'])
+        self._name = name
 
-    def get_health(self) -> int:
+    @property
+    def icon(self) -> str:
         """
-        Returns the current health of the character.
+        Gets the character's icon.
 
         Returns:
-            int: The character's health.
+            str: The icon representing the character.
+        """
+        return self._icon
+
+    @icon.setter
+    def icon(self, icon: str) -> None:
+        """
+        Sets the character's icon.
+
+        Args:
+            icon (str): The icon to represent the character.
+        """
+        self._icon = icon
+
+    @property
+    def health(self) -> int:
+        """
+        Gets the character's current health.
+
+        Returns:
+            int: The current health of the character.
         """
         return self.stats['health']
 
-    def get_max_health(self) -> int:
+    @health.setter
+    def health(self, health: int) -> None:
         """
-        Returns the maximum health of the character.
+        Sets the character's current health.
+
+        Ensures the health does not exceed the maximum health value.
+
+        Args:
+            health (int): The new health value.
+        """
+        self.stats['health'] = min(health, self.max_health)
+
+    @property
+    def max_health(self) -> int:
+        """
+        Gets the character's maximum health.
 
         Returns:
-            int: The character's maximum health.
+            int: The maximum health value.
         """
         return self.stats['health_max']
+
+    @max_health.setter
+    def max_health(self, max_health: int) -> None:
+        """
+        Sets the character's maximum health.
+
+        Args:
+            max_health (int): The new maximum health value.
+        """
+        self.stats['health_max'] = max_health

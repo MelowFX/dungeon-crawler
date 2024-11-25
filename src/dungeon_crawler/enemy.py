@@ -10,16 +10,6 @@ from action import AttackAction
 from character import Character
 
 
-def generate_goblin_name() -> str:
-    """
-    Generates a random goblin name.
-
-    Returns:
-        str: A randomly selected goblin name from the predefined list.
-    """
-    return choice(config.GOBLIN_NAMES)
-
-
 class Enemy(Character):
     """
     Subclass of Character representing an enemy in the game.
@@ -36,6 +26,16 @@ class Enemy(Character):
 
 
 class Goblin(Enemy):
+    @staticmethod
+    def generate_goblin_name() -> str:
+        """
+        Generates a random goblin name.
+
+        Returns:
+            str: A randomly selected goblin name from the predefined list.
+        """
+        return choice(config.GOBLIN_NAMES)
+
     """
     Subclass of Enemy representing a Goblin character in the game.
     """

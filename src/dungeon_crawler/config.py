@@ -71,3 +71,19 @@ TEMPLATE_MOVE = [
     "🦇 The sound of flapping wings fills the air. A swarm of bats flies overhead, but something "
     "more sinister lurks in the shadows."
 ]
+
+COMBAT_ALERT = """============================
+      ⚠️ ENEMY ALERT
+============================"""
+
+COMBAT_VICTORY = """============================
+        🎉 VICTORY!         
+============================"""
+
+COMBAT_PLAYER_TURN = """============================
+      ⚔️ HERO'S TURN        
+============================"""
+
+COMBAT_ENEMY_TURN = """============================
+      👺 ENEMY'S TURN       
+============================"""
