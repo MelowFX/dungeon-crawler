@@ -12,7 +12,7 @@ from util import clear, get_yes_no
 
 import config
 from enemy import Goblin
-from player import Hero
+from hero import Hero
 from item import Item, Potion
 from combat import Combat
 

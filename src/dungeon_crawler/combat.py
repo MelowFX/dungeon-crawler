@@ -5,7 +5,7 @@ from random import randint
 from time import sleep
 from action import ActionResult
 from util import clear, get_yes_no
-from player import Hero
+from hero import Hero
 
 
 class Combat:
