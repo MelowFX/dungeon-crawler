@@ -1,24 +1,20 @@
-# dungeon_crawler
+# `dungeon_crawler`
 Python project for codesters.club
-
----
-
-# Dungeon Crawler Game
 
 **Dungeon Crawler** is a text-based role-playing game (RPG) where players control a hero navigating a dungeon, battling enemies, collecting items, and leveling up with experience points. The game features turn-based combat and dynamic action sequences.
 
-## Objective
+## Objective 🎯
 
 The goal of the game is to defeat enemies, progress through dungeon levels, and grow your hero's power through experience points, magical items, and combat abilities. The hero can use items like potions to heal or acquire powerful magic such as the Fireball spell.
 
-## Features
+## Features ✨
 
-1. **Turn-Based Combat**: The player and enemy take turns to perform actions (e.g., attacking, using potions).
-2. **Inventory System**: The player can collect and use items (potions, spellbooks) that provide various effects.
-3. **Experience and Leveling**: The player gains experience points (XP) from defeating enemies and can unlock new abilities.
-4. **Random Events**: Random events like finding new items (spellbooks, super-potions) or encountering enemies.
+1. **Turn-Based Combat** ⚔️: The player and enemy take turns to perform actions (e.g., attacking, using potions).
+2. **Inventory System** 🎒: The player can collect and use items (potions, spellbooks) that provide various effects.
+3. **Experience and Leveling** 📈: The player gains experience points (XP) from defeating enemies and can unlock new abilities.
+4. **Random Events** 🎲: Random events like finding new items (spellbooks, super-potions) or encountering enemies.
 
-## Installation
+## Installation ⚙️
 
 To run **Dungeon Crawler** on your local machine, follow these steps:
 
@@ -48,9 +44,9 @@ pip install -r requirements.txt
 python main.py
 ```
 
-## Classes and Their Relationships
+## Classes and Their Relationships 📚
 
-### 1. **Character (Base Class)**
+### 1. **Character (Base Class)** 👤
 
 - **Purpose**: Represents any character in the game (either a hero or an enemy).
 - **Attributes**: 
@@ -72,7 +68,7 @@ The `Character` class serves as the base for both the `Hero` and `Enemy` classes
 
 ---
 
-### 2. **Hero (Subclass of Character)**
+### 2. **Hero (Subclass of Character)** 🦸‍♂️
 
 - **Purpose**: Represents the player's character in the game.
 - **Attributes**:
@@ -88,7 +84,7 @@ The `Hero` class extends the `Character` class and adds unique attributes and ab
 
 ---
 
-### 3. **Enemy (Subclass of Character)**
+### 3. **Enemy (Subclass of Character)** 👹
 
 - **Purpose**: Represents an enemy character in the dungeon.
 - **Attributes**: Similar to the `Hero` class but without the experience, magic, or potion features.
@@ -100,7 +96,7 @@ The `Enemy` class is another subclass of `Character`, but it has fewer features 
 
 ---
 
-### 4. **Item**
+### 4. **Item** 📦
 
 - **Purpose**: Represents an item in the game (could be potions, spellbooks, etc.).
 - **Attributes**:
@@ -116,7 +112,7 @@ Items can be added to the hero’s inventory and used during the game. Subclasse
 
 ---
 
-### 5. **Potion (Subclass of Item)**
+### 5. **Potion (Subclass of Item)** ⚗️
 
 - **Purpose**: A subclass of `Item` specifically for potions.
 - **Methods**: 
@@ -126,7 +122,7 @@ The `Potion` class extends the `Item` class and defines specific behavior for he
 
 ---
 
-### 6. **Inventory**
+### 6. **Inventory** 🎒
 
 - **Purpose**: Manages a collection of items that a character (typically the hero) owns.
 - **Methods**: 
@@ -138,7 +134,7 @@ The `Inventory` class helps manage the player's collection of items, providing t
 
 ---
 
-### 7. **Actions (Attack, UsePotion, Flee)**
+### 7. **Actions (Attack, UsePotion, Flee)** 🏃‍♂️⚔️💉
 
 - **Purpose**: Defines actions the characters can take during the game (attacks, using potions, and fleeing).
 - **Attributes**: Each action class (e.g., `AttackAction`, `UsePotionAction`, `FleeAction`) defines the execution logic for its corresponding action.
@@ -149,7 +145,7 @@ Actions are mapped in the `actions` attribute of both `Hero` and `Enemy` classes
 
 ---
 
-## How These Classes Connect
+## How These Classes Connect 🔗
 
 - **`Character`**: The base class for all characters. Both the `Hero` and `Enemy` classes inherit from `Character`.
 - **`Hero` and `Enemy`**: Specific types of characters, with the `Hero` class having more attributes like XP, magical abilities, and inventory management.
@@ -159,7 +155,7 @@ Actions are mapped in the `actions` attribute of both `Hero` and `Enemy` classes
 
 ---
 
-## Contributing
+## Contributing 🤝
 
 If you'd like to contribute to **Dungeon Crawler**, feel free to fork the repository and submit a pull request with your improvements or bug fixes.
 
@@ -167,5 +163,5 @@ Please ensure that your contributions adhere to the project's coding standards a
 
 ---
 
-## License
+## License 📜
 This project is licensed under the MIT License - see the LICENSE file for details.
