@@ -5,7 +5,7 @@ from random import randint
 from time import sleep
 from action import ActionResult
 from util import clear, get_yes_no
-from player import Player
+from player import Player, PlayerState
 
 
 class Combat:
@@ -30,6 +30,8 @@ class Combat:
         Simulates a turn-based combat sequence between the hero and the enemy.
         """
         clear()
+
+        self.hero.state = PlayerState.IN_COMBAT
 
         old_health = self.hero.health
         self.turn = 1
@@ -73,6 +75,8 @@ class Combat:
         print(f"    🩸 Damage taken: {damage}")
         print(f"    ✨ Experience gained: {xp}")
 
+        self.hero.state = PlayerState.IDLE
+
         # Random chance to find a super-potion after battle
         self.game.find_superpotion()
 
@@ -91,9 +95,9 @@ class Combat:
         """
         print(config.COMBAT_PLAYER_TURN)
 
-        self.hero.show_actions()
-
         while True:
+            self.hero.show_actions()
+
             action = input("\n> Choose an action: ").strip()
             print()
             sleep(1 * config.GAME_SPEED)

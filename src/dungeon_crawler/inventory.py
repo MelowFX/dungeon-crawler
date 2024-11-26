@@ -4,7 +4,6 @@ can carry. The class allows adding, removing, checking for, and using items, as 
 the inventory contents.
 """
 
-from character import Character
 from item import Item
 
 
@@ -22,7 +21,8 @@ class Inventory:
 
         This method creates an empty list to store the items in the inventory.
         """
-        self.items = []
+        self._items = []
+        self.capacity = 5
 
     def __str__(self):
         """
@@ -33,45 +33,63 @@ class Inventory:
         Returns:
             str: The inventory's contents as a string.
         """
-        return "\n🎒 Inventory:\n" + ("\n".join(
-            f"    {str(item)}" for item in self.items) if self.items else "    Inventory is empty.")
+        return "🎒 Inventory:\n" + ("\n".join(
+            f"    {str(item)}" for item in self._items) if self._items else "    Inventory is empty.")
 
     def add_item(self, item: Item):
         """
         Adds an item to the inventory.
-
-        Args:
-            item: The item to be added to the inventory.
         """
-        self.items.append(item)
+        if item.stackable:
+            existing_item = self.find_item(item.uuid)
+            if existing_item:
+                existing_item.amount += item.amount
+                return True
 
-    def remove_item(self, item: Item):
+        if len(self._items) < self.capacity:
+            self._items.append(item)
+            return True
+
+        return False
+
+    def remove_item(self, item_uuid: str, amount: int = 1):
         """
         Removes an item from the inventory.
-
-        Args:
-            item: The item to be removed from the inventory.
         """
-        item.on_remove()
-        self.items.remove(item)
+        for item in self._items:
+            if item.uuid == item_uuid:
+                if item.stackable:
+                    if item.amount <= amount:
+                        item.on_remove()
+                        self._items.remove(item)
+                        return item
 
-    def find_item(self, uuid: str):
+                    item.amount -= amount
+                    return None
+                else:
+                    item.on_remove()
+                    self._items.remove(item)
+                    return item
+
+        return None
+
+    def find_item(self, item_uuid: str):
         """
         Finds a specific item in the inventory.
 
         Args:
-            uuid: The item UUID to search for in the inventory.
+            item_uuid: The item UUID to search for in the inventory.
 
         Returns:
             Item or None: The item if found, or None if not found.
         """
-        for item in self.items:
-            if item.uuid == uuid:
+        for item in self._items:
+            if item.uuid == item_uuid:
                 return item
 
         return None
 
-    def use_item(self, item: Item, user: Character):
+    def use_item(self, item: Item, user):
         """
         Uses an item from the inventory and removes it after use.
 
@@ -80,4 +98,4 @@ class Inventory:
             user: The character using the item.
         """
         if item.use(user):
-            self.remove_item(item)
+            self._items.remove(item)

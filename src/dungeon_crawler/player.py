@@ -4,15 +4,21 @@ player's hero in the game. It adds unique attributes and abilities that differen
 from other characters, including experience points, super-potions, and magical abilities.
 """
 
+from enum import Enum, auto
 from random import randint
 from character import Character
 from inventory import Inventory
-from action import AttackAction, UsePotionAction, FleeAction
+import action
 
 DEFAULT_NAME = "Hero"
 DEFAULT_ICON = "🧍"
 DEFAULT_HEALTH = 100
 DEFAULT_DAMAGE = 20
+
+
+class PlayerState(Enum):
+    IDLE = auto(),
+    IN_COMBAT = auto(),
 
 
 class Player(Character):
@@ -41,16 +47,19 @@ class Player(Character):
         self.inventory = Inventory()
 
         self.actions = {
-            "attack": AttackAction(),
-            "potion": UsePotionAction(),
-            "flee": FleeAction(),
+            "attack": action.AttackAction(),
+            "flee": action.FleeAction(),
+            "use": action.UseItemAction(),
+            "continue": action.ContinueAction(),
         }
+
+        self.state = PlayerState.IDLE
 
     def __str__(self) -> str:
         """
         Prints the character's current health and name.
         """
-        text = f"\n    ✨ Experience: {self.experience}\n" + str(self.inventory)
+        text = f"\n    ✨ Experience: {self.experience}\n" + "\n" + str(self.inventory)
         return super().__str__() + text
 
     def prompt_name(self):
@@ -76,6 +85,10 @@ class Player(Character):
         print("🎭 \033[1mActions:\033[0m")
 
         for name in self.actions:
+            act = self.actions[name]
+            if not act.can_perform(self):
+                continue
+
             print(f"    [{name}]")
 
     def pre_damage(self):

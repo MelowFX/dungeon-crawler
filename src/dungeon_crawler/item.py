@@ -8,6 +8,7 @@ DEFAULT_NAME = "Item"
 DEFAULT_DESCRIPTION = "Description"
 DEFAULT_ICON = "📦"
 DEFAULT_AMOUNT = 1
+DEFAULT_MAX_AMOUNT = 1
 
 
 class Item:
@@ -33,6 +34,8 @@ class Item:
         self._description = attributes.get("description", DEFAULT_DESCRIPTION)
         self._icon = attributes.get("icon", DEFAULT_ICON)
         self._amount = attributes.get("amount", DEFAULT_AMOUNT)
+        self._max_amount = attributes.get("max_amount", DEFAULT_MAX_AMOUNT)
+        self._stackable = self._max_amount > 1 and True or False
 
     def __str__(self):
         """
@@ -41,7 +44,8 @@ class Item:
         Returns:
             str: A string describing the item.
         """
-        return f"{self.icon} {self.name} ({self.amount}): {self.description}"
+        return (f"{self.icon} {self.name} \033[1m({self.amount})\033[0m: {self.description} "
+                f"\033[1m[{self.uuid}]\033[0m")
 
     @property
     def uuid(self):
@@ -57,7 +61,7 @@ class Item:
 
     @property
     def description(self) -> str:
-        return self._name
+        return self._description
 
     @description.setter
     def description(self, description: str) -> None:
@@ -79,6 +83,18 @@ class Item:
     def amount(self, amount: int) -> None:
         self._amount = amount
 
+    @property
+    def max_amount(self) -> int:
+        return self._max_amount
+
+    @max_amount.setter
+    def max_amount(self, max_amount: int) -> None:
+        self._max_amount = max_amount
+
+    @property
+    def stackable(self) -> bool:
+        return self._stackable
+
     def on_remove(self):
         """Handles any behavior when the item is removed from the inventory."""
 
@@ -95,8 +111,18 @@ class Item:
         """
         self.amount -= 1
 
+        if self.amount < 1:
+            return True
 
-class Potion(Item):
+        return False
+
+
+class NonInteractableItem(Item):
+    def use(self, user):
+        print(self.icon, self.description)
+
+
+class PotionItem(Item):
     """
     A subclass of Item representing a potion that restores health.
     """
@@ -110,9 +136,7 @@ class Potion(Item):
         Returns:
             bool: Always returns True to indicate the potion was used successfully.
         """
-        super().use(user)
-
-        user.health = user.max_health
+        user.health = user.health_max
         print("🩵 Health fully restored")
 
-        return True
+        return super().use(user)

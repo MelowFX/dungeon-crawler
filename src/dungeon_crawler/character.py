@@ -5,13 +5,25 @@ while `Hero` adds specific functionality for the player character, and `Enemy` i
 all enemy characters.
 """
 
+from dataclasses import dataclass
 from random import randint
-from action import ActionResult, AttackAction, UsePotionAction, FleeAction
+from typing import Optional
+from inventory import Inventory
+import action
 
 DEFAULT_NAME = "Unnamed"
 DEFAULT_HEALTH = 100
 DEFAULT_DAMAGE = 20
 DEFAULT_ICON = "❌"
+
+
+@dataclass
+class CharacterAttributes:
+    health: int
+    health_max: int
+    damage: int
+    flee_chance: int
+    crit_chance: int
 
 
 class Character:
@@ -35,31 +47,25 @@ class Character:
 
         self._name = name
         self._icon = icon
+        self._attributes = CharacterAttributes(
+            health=health,
+            health_max=health,
+            damage=damage,
+            flee_chance=25,
+            crit_chance=50,
+        )
 
-        self.stats = {
-            "health": health,
-            "health_max": health,
-            "damage": damage,
-        }
+        self._inventory: Optional[Inventory] = None
 
-        self.inventory = None
-
-        self.flee_chance = 25
-        self.crit_chance = 50
-
-        self.actions = {
-            "attack": AttackAction(),
-            "potion": UsePotionAction(),
-            "flee": FleeAction(),
-        }
+        self.actions = {}
 
     def __str__(self) -> str:
         """
         Prints the character's current health and name.
         """
         return (f"\033[1m{self.icon} {self.name}'s\033[0m status:\n"
-                f"    ❤️ Health: {self.stats['health']} / {self.stats['health_max']}\n"
-                f"    💥 Damage: {self.stats['damage']}")
+                f"    ❤️ Health: {self.health} / {self.health_max}\n"
+                f"    💥 Damage: {self._attributes.damage}")
 
     def attack(self, target: "Character") -> None:
         """
@@ -68,10 +74,10 @@ class Character:
         Args:
             target (Character): The target character being attacked.
         """
-        damage = self.stats['damage']
+        damage = self._attributes.damage
         crit_text = ""
 
-        if randint(1, 100) <= self.crit_chance:
+        if randint(1, 100) <= self._attributes.crit_chance:
             damage *= 1.5
             damage = round(damage)
             crit_text = "\033[1mCRIT!\033[0m "
@@ -100,13 +106,13 @@ class Character:
 
         Returns: ActionResult: The result of executing the action.
         """
-        action = self.actions.get(action_name)
+        act = self.actions.get(action_name)
 
-        if action:
-            return action.perform(self, *args, **kwargs)
+        if act:
+            return act.perform(self, *args, **kwargs)
 
         print("❌ Invalid action.")
-        return ActionResult.NONE
+        return action.ActionResult.NONE
 
     def pre_damage(self):
         """
@@ -127,7 +133,7 @@ class Character:
         Returns:
             bool: True if the character is dead, False otherwise.
         """
-        return self.stats['health'] > 0
+        return self._attributes.health > 0
 
     @property
     def name(self) -> str:
@@ -177,7 +183,7 @@ class Character:
         Returns:
             int: The current health of the character.
         """
-        return self.stats['health']
+        return self._attributes.health
 
     @health.setter
     def health(self, health: int) -> None:
@@ -189,24 +195,24 @@ class Character:
         Args:
             health (int): The new health value.
         """
-        self.stats['health'] = min(health, self.max_health)
+        self._attributes.health = min(health, self.health_max)
 
     @property
-    def max_health(self) -> int:
+    def health_max(self) -> int:
         """
         Gets the character's maximum health.
 
         Returns:
             int: The maximum health value.
         """
-        return self.stats['health_max']
+        return self._attributes.health_max
 
-    @max_health.setter
-    def max_health(self, max_health: int) -> None:
+    @health_max.setter
+    def health_max(self, health_max: int) -> None:
         """
         Sets the character's maximum health.
 
         Args:
-            max_health (int): The new maximum health value.
+            health_max (int): The new maximum health value.
         """
-        self.stats['health_max'] = max_health
+        self._attributes.health_max = health_max
